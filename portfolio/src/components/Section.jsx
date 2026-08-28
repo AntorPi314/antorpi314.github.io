@@ -18,7 +18,7 @@ function Section({ id, alt = false, className = '', children }) {
           : 'bg-background dark:bg-background-dark'
       } ${className}`}
     >
-      <div className="max-w-6xl mx-auto px-6 md:px-10 py-16 md:py-24">
+      <div className="max-w-6xl mx-auto px-6 md:px-10 py-8 md:py-12">
         {children}
       </div>
     </section>

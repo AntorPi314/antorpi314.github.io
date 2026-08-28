@@ -35,7 +35,7 @@ const itemVariants = {
 
 function Hero() {
   return (
-    <div className="relative min-h-[85vh] flex items-center overflow-hidden">
+    <div className="relative min-h-[45vh] flex items-center overflow-hidden">
       {/* Decorative background gradient blobs. These use pure CSS/Tailwind
           (no external images) so they render identically in dark and
           light mode, just with different opacity/color via the
@@ -55,7 +55,7 @@ function Hero() {
         <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left">
           <motion.p
             variants={itemVariants}
-            className="text-accent dark:text-accent-light font-semibold tracking-wide mb-3"
+            className="text-accent dark:text-accent-light font-semibold tracking-wide mb-1.5"
           >
             Hi, this is
           </motion.p>

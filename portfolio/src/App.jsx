@@ -8,6 +8,7 @@ import Education from './components/Education.jsx';
 import Contact from './components/Contact.jsx';
 import Footer from './components/Footer.jsx';
 import FlyingBird from './components/FlyingBird.jsx';
+import AiTerminal from './components/AiTerminal.jsx';
 
 /**
  * App is the root component. As of Step 9, every section has real
@@ -23,8 +24,12 @@ function App() {
       <Navbar />
 
       {/* id="home" is required here since the navbar logo links to it. */}
-      <Section id="home" className="pt-24 md:pt-28">
+      <Section id="home" className="pt-12 md:pt-14">
         <Hero />
+      </Section>
+
+      <Section id="terminal">
+        <AiTerminal />
       </Section>
 
       <Section id="about" alt>
