@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base document styles that apply across the whole app */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-textPrimary dark:bg-background-dark dark:text-textPrimary-dark;
+    /* Smooth color transition whenever the theme is toggled */
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+}
