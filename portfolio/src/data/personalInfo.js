@@ -8,7 +8,7 @@ export const personalInfo = {
   tagline:
     'Software Engineer with strong hands-on experience across full-stack, mobile, and ML-based projects. Skilled in building production-ready applications from scratch, including MERN stack platforms, Flutter apps, native Android apps, and offline-first BLE communication systems.',
   location: 'Dhaka, Cantonment - 1206',
-  phone: '01957472909',
+  phone: '+8801957472909',
   email: 'antorhawlader50@gmail.com',
   socials: {
     github: 'https://github.com/AntorPi314',

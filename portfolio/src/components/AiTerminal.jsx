@@ -13,6 +13,90 @@ const BOOT_LINES = [
   `Type a question about his skills, projects, or background and press Enter.`,
 ];
 
+// Matches http(s) and mailto/tel-style URLs so AI answers that mention
+// a link render as an actual clickable <a>, not plain text.
+const URL_PATTERN = /(https?:\/\/[^\s]+|mailto:[^\s]+|tel:[^\s]+)/g;
+
+// Matches [color]...[/color] tags the AI uses to highlight words,
+// terminal-style. Keep this list in sync with the colors named in the
+// system prompt.
+const COLOR_TAG_PATTERN = /\[(green|red|yellow|blue|cyan|magenta|white)\]([\s\S]*?)\[\/\1\]/g;
+
+const TERMINAL_COLORS = {
+  green: '#27c93f',
+  red: '#ff5f56',
+  yellow: '#ffbd2e',
+  blue: '#61afef',
+  cyan: '#56d4dd',
+  magenta: '#c678dd',
+  white: '#ffffff',
+};
+
+// Renders a plain (non-color-tagged) text segment, turning any raw
+// URLs inside it into clickable links.
+function renderLinksOnly(text, keyPrefix) {
+  const parts = text.split(URL_PATTERN);
+  return parts.map((part, i) => {
+    if (part.match(URL_PATTERN)) {
+      const trailingMatch = part.match(/[).,!?]+$/);
+      const trailing = trailingMatch ? trailingMatch[0] : '';
+      const cleanUrl = trailing ? part.slice(0, -trailing.length) : part;
+      return (
+        <span key={`${keyPrefix}-${i}`}>
+          <a
+            href={cleanUrl}
+            target={cleanUrl.startsWith('http') ? '_blank' : undefined}
+            rel={cleanUrl.startsWith('http') ? 'noopener noreferrer' : undefined}
+            className="underline break-all"
+            style={{ color: 'inherit' }}
+          >
+            {cleanUrl}
+          </a>
+          {trailing}
+        </span>
+      );
+    }
+    return <span key={`${keyPrefix}-${i}`}>{part}</span>;
+  });
+}
+
+// Full renderer: splits out [color]...[/color] tags first (applying
+// the terminal color to that span, defaulting to the default link
+// blue for unmatched links), then runs link detection on every
+// remaining plain segment, including inside color tags.
+function renderWithLinks(text) {
+  const segments = [];
+  let lastIndex = 0;
+  let match;
+
+  COLOR_TAG_PATTERN.lastIndex = 0;
+  while ((match = COLOR_TAG_PATTERN.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      segments.push({ type: 'plain', text: text.slice(lastIndex, match.index) });
+    }
+    segments.push({ type: 'color', color: match[1], text: match[2] });
+    lastIndex = COLOR_TAG_PATTERN.lastIndex;
+  }
+  if (lastIndex < text.length) {
+    segments.push({ type: 'plain', text: text.slice(lastIndex) });
+  }
+
+  return segments.map((seg, i) => {
+    if (seg.type === 'color') {
+      return (
+        <span key={i} style={{ color: TERMINAL_COLORS[seg.color] || undefined }}>
+          {renderLinksOnly(seg.text, `c${i}`)}
+        </span>
+      );
+    }
+    return (
+      <span key={i} className="[&_a]:text-[#61afef] [&_a]:hover:text-[#8fc4f5]">
+        {renderLinksOnly(seg.text, `p${i}`)}
+      </span>
+    );
+  });
+}
+
 // Turns our local message history into the "contents" array the
 // Gemini generateContent endpoint expects, with the system prompt
 // injected as the very first user/model exchange so the model stays
@@ -88,6 +172,15 @@ function AiTerminal() {
     }
   }, [lines, isLoading]);
 
+  // Disabling the input while loading strips its focus (browsers do
+  // this automatically for disabled elements). Restore focus once
+  // loading finishes so the visitor can keep typing without re-clicking.
+  useEffect(() => {
+    if (!isLoading) {
+      inputRef.current?.focus();
+    }
+  }, [isLoading]);
+
   const focusInput = () => inputRef.current?.focus();
 
   const handleSubmit = async (e) => {
@@ -160,7 +253,7 @@ function AiTerminal() {
           }
           return (
             <p key={i} className="text-white/85 whitespace-pre-wrap">
-              {line.text}
+              {renderWithLinks(line.text)}
             </p>
           );
         })}
