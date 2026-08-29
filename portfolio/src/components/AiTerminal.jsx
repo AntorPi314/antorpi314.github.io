@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { personalInfo } from '../data/personalInfo.js';
 import { aiSystemPrompt } from '../data/aiSystemPrompt.js';
-import { GEMINI_ENDPOINT, GEMINI_API_KEY } from '../data/aiConfig.js';
+import { WORKER_ENDPOINT } from '../data/aiConfig.js';
 
 const FIRST_NAME = personalInfo.name.split(' ')[0].toLowerCase();
 const PROMPT_LABEL = `visitor@${FIRST_NAME}-portfolio:~$`;
@@ -35,7 +35,10 @@ function buildContents(history) {
 }
 
 async function askGemini(history) {
-  const response = await fetch(`${GEMINI_ENDPOINT}?key=${GEMINI_API_KEY}`, {
+  // Calls our Cloudflare Worker, not Gemini directly. The Worker holds
+  // the real API key server-side and forwards this to Gemini, so no
+  // key of any kind ever reaches the browser or this bundle.
+  const response = await fetch(WORKER_ENDPOINT, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -178,7 +181,6 @@ function AiTerminal() {
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            autoFocus
             spellCheck={false}
             autoComplete="off"
             disabled={isLoading}
