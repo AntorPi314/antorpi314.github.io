@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { Github, Linkedin, Mail, ArrowDown } from 'lucide-react';
 import { personalInfo } from '../data/personalInfo.js';
 import profilePlaceholder from '../assets/profile.jpg';
+import ThanosPart from './ThanosPart.jsx';
 
 // Social links shown as icon buttons below the tagline.
 // Reusing the centralized personalInfo data keeps this in sync with
@@ -33,7 +34,7 @@ const itemVariants = {
   },
 };
 
-function Hero() {
+function Hero({ partsRef }) {
   return (
     <div className="relative min-h-[45vh] flex items-center overflow-hidden">
       {/* Decorative background gradient blobs. These use pure CSS/Tailwind
@@ -78,7 +79,16 @@ function Hero() {
             variants={itemVariants}
             className="max-w-xl text-base md:text-lg text-textSecondary dark:text-textSecondary-dark leading-relaxed mb-8"
           >
-            {personalInfo.tagline}
+            {personalInfo.taglineBefore}
+            <ThanosPart
+              sectionId="hero"
+              partId="hero-tagline"
+              partsRef={partsRef}
+              as="span"
+            >
+              {personalInfo.taglineSnapPhrase}
+            </ThanosPart>
+            {personalInfo.taglineAfter}
           </motion.p>
 
           {/* Social icons */}

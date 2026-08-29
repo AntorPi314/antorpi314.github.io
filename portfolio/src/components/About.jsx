@@ -1,8 +1,9 @@
 import { motion } from 'framer-motion';
 import SectionHeading from './SectionHeading.jsx';
+import ThanosPart from './ThanosPart.jsx';
 import { aboutText } from '../data/personalInfo.js';
 
-function About() {
+function About({ partsRef }) {
   return (
     <div>
       <SectionHeading
@@ -17,9 +18,11 @@ function About() {
         transition={{ duration: 0.6, ease: 'easeOut', delay: 0.1 }}
         className="max-w-3xl mx-auto p-8 md:p-10 rounded-2xl bg-surface dark:bg-surface-dark border border-border dark:border-border-dark shadow-sm"
       >
-        <p className="text-base md:text-lg leading-relaxed text-textSecondary dark:text-textSecondary-dark">
-          {aboutText}
-        </p>
+        <ThanosPart sectionId="about" partId="about-text" partsRef={partsRef}>
+          <p className="text-base md:text-lg leading-relaxed text-textSecondary dark:text-textSecondary-dark">
+            {aboutText}
+          </p>
+        </ThanosPart>
       </motion.div>
     </div>
   );

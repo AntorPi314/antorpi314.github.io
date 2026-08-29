@@ -1,0 +1,101 @@
+/* Thanos snap dust animation, adapted from the reference thanos-snap-react
+   component. Applied to the wrapped section content as a whole (this
+   portfolio dissolves "half the site" as one block, not per-card), and
+   to the gauntlet button itself for its idle/power/snap image states. */
+
+.thanos-target {
+  transition: opacity 0.2s;
+}
+
+/* Dissolving into dust */
+.thanos-dust-out {
+  animation: thanos-disintegrate 1.1s forwards ease-in;
+  pointer-events: none;
+}
+
+@keyframes thanos-disintegrate {
+  0% {
+    opacity: 1;
+    filter: blur(0px);
+    transform: translate(0, 0) scale(1);
+  }
+  40% {
+    opacity: 0.6;
+    filter: blur(3px);
+  }
+  100% {
+    opacity: 0;
+    filter: blur(10px) brightness(1.4);
+    transform: translate(var(--drift-x, 10px), var(--drift-y, -24px)) scale(0.96);
+  }
+}
+
+/* Reassembling back (Time Stone reverse) */
+.thanos-dust-in {
+  animation: thanos-reassemble 1.1s forwards ease-out;
+}
+
+@keyframes thanos-reassemble {
+  0% {
+    opacity: 0;
+    filter: blur(10px) brightness(1.4);
+    transform: translate(var(--drift-x, 10px), var(--drift-y, -24px)) scale(0.96);
+  }
+  60% {
+    opacity: 0.6;
+    filter: blur(3px);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0px);
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+/* Gauntlet button */
+.thanos-gauntlet-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.15s ease;
+  filter: drop-shadow(0 0 4px rgba(255, 200, 0, 0.55));
+}
+
+.thanos-gauntlet-btn:hover {
+  transform: scale(1.08);
+}
+
+.thanos-gauntlet-btn:active {
+  transform: scale(0.95);
+}
+
+.thanos-gauntlet-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.75;
+}
+
+.thanos-gauntlet-btn img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Brief glow pulse on the gauntlet at the moment of the snap itself */
+.thanos-gauntlet-pulse {
+  animation: thanos-gauntlet-glow 0.6s ease-out;
+}
+
+@keyframes thanos-gauntlet-glow {
+  0% {
+    filter: drop-shadow(0 0 4px rgba(255, 200, 0, 0.55));
+  }
+  35% {
+    filter: drop-shadow(0 0 18px rgba(255, 210, 60, 0.95));
+  }
+  100% {
+    filter: drop-shadow(0 0 4px rgba(255, 200, 0, 0.55));
+  }
+}

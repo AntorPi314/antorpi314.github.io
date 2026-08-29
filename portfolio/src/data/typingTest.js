@@ -16,7 +16,7 @@ import { personalInfo, aboutText } from './personalInfo.js';
 import { skillCategories } from './skills.js';
 import { projects } from './projects.js';
 
-export const TYPING_DURATIONS = [15, 30, 60, 120];
+export const TYPING_DURATIONS = [30, 60, 120];
 
 export const TYPING_CATEGORIES = [
   {

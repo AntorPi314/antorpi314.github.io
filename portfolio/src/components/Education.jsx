@@ -9,7 +9,7 @@ import { education } from '../data/education.js';
  * slightly after the previous one) is handled inside EducationItem
  * via its `index`-based transition delay.
  */
-function Education() {
+function Education({ partsRef }) {
   return (
     <div>
       <SectionHeading
@@ -21,12 +21,14 @@ function Education() {
         {education.map((item, index) => (
           <EducationItem
             key={item.id}
+            id={item.id}
             institution={item.institution}
             degree={item.degree}
             period={item.period}
             details={item.details}
             index={index}
             isLast={index === education.length - 1}
+            partsRef={partsRef}
           />
         ))}
       </div>

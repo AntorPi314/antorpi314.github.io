@@ -2,7 +2,7 @@ import SectionHeading from './SectionHeading.jsx';
 import SkillCard from './SkillCard.jsx';
 import { skillCategories } from '../data/skills.js';
 
-function Skills() {
+function Skills({ partsRef }) {
   return (
     <div>
       <SectionHeading
@@ -18,6 +18,7 @@ function Skills() {
             icon={item.icon}
             skills={item.skills}
             index={index}
+            partsRef={partsRef}
           />
         ))}
       </div>

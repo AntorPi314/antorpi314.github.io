@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Phone, Mail, MapPin, Github, Linkedin, MessageCircle, Copy, Check } from 'lucide-react';
 import SectionHeading from './SectionHeading.jsx';
+import ThanosPart from './ThanosPart.jsx';
 import { personalInfo } from '../data/personalInfo.js';
 
 // Each contact detail as an icon + label + link/href.
@@ -40,7 +41,7 @@ const SOCIAL_LINKS = [
  * plus GitHub/LinkedIn as icon buttons and a prominent "Say Hello"
  * CTA button that also opens the mail client.
  */
-function Contact() {
+function Contact({ partsRef }) {
   // Tracks which field (by its copyValue) was just copied, to briefly
   // swap the Copy icon for a checkmark as feedback.
   const [copiedValue, setCopiedValue] = useState(null);
@@ -75,14 +76,19 @@ function Contact() {
             const isCopied = copiedValue === copyValue;
 
             const content = (
-              <>
+              <ThanosPart
+                sectionId="contact"
+                partId={label}
+                partsRef={partsRef}
+                className="flex items-center gap-4 flex-1 min-w-0"
+              >
                 <span className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-accent/10 dark:bg-accent-light/10 text-accent dark:text-accent-light">
                   <Icon size={18} />
                 </span>
                 <span className="text-textPrimary dark:text-textPrimary-dark font-medium break-all">
                   {label}
                 </span>
-              </>
+              </ThanosPart>
             );
 
             const rowClasses =
@@ -132,7 +138,9 @@ function Contact() {
               whileTap={{ scale: 0.95 }}
               className="p-3 rounded-full bg-surface dark:bg-surface-dark border border-border dark:border-border-dark text-textSecondary dark:text-textSecondary-dark hover:text-accent dark:hover:text-accent-light hover:border-accent dark:hover:border-accent-light transition-colors duration-200 shadow-sm"
             >
-              <Icon size={20} />
+              <ThanosPart sectionId="contact" partId={`social-${label}`} partsRef={partsRef}>
+                <Icon size={20} />
+              </ThanosPart>
             </motion.a>
           ))}
         </div>
@@ -144,7 +152,9 @@ function Contact() {
           whileTap={{ scale: 0.95 }}
           className="px-8 py-3 rounded-full bg-accent hover:bg-accent-hover text-white font-medium shadow-lg shadow-accent/30 transition-colors duration-200"
         >
-          Say Hello
+          <ThanosPart sectionId="contact" partId="say-hello" partsRef={partsRef}>
+            Say Hello
+          </ThanosPart>
         </motion.a>
       </motion.div>
     </div>

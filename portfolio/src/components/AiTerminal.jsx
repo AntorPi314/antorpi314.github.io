@@ -166,10 +166,33 @@ async function askGemini(history) {
 // surrounding whitespace) as the command that opens the typing-test panel.
 const TYPING_COMMAND_PATTERN = /^typing(\s+test)?$/i;
 
+// Duration button label: seconds stay as "30s", anything at or above a
+// minute reads as "1min", "2min", etc. instead of raw seconds.
+function formatDuration(seconds) {
+  if (seconds < 60) return `${seconds}s`;
+  return `${seconds / 60}min`;
+}
+
+// Live countdown label: under a minute left shows as "12s", a minute or
+// more shows as "m:ss" (e.g. "2:05") so a 5-minute test doesn't read as
+// a wall of raw seconds while it counts down.
+function formatTimeLeft(seconds) {
+  const rounded = Math.ceil(seconds);
+  if (rounded < 60) return `${rounded}s`;
+  const mins = Math.floor(rounded / 60);
+  const secs = rounded % 60;
+  return `${mins}:${String(secs).padStart(2, '0')}`;
+}
+
 // Calls the same Cloudflare Worker as the Q&A assistant, but with a
 // standalone one-shot prompt that has nothing to do with aiSystemPrompt —
 // Gemini's only job here is to hand back the paragraph to type.
 async function askGeminiTypingText(category, wordCount) {
+  // Rough budget: ~1.5 tokens per word for English text, plus healthy
+  // headroom so longer tests (up to 5min / ~420 words) don't get cut
+  // off mid-sentence.
+  const maxOutputTokens = Math.min(2048, Math.round(wordCount * 2.2) + 100);
+
   const response = await fetch(WORKER_ENDPOINT, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -177,7 +200,7 @@ async function askGeminiTypingText(category, wordCount) {
       contents: [{ role: 'user', parts: [{ text: buildTypingPrompt(category, wordCount) }] }],
       generationConfig: {
         temperature: 0.9,
-        maxOutputTokens: 400,
+        maxOutputTokens,
       },
     }),
   });
@@ -214,7 +237,16 @@ function AiTerminal() {
   // Disabling the input while loading strips its focus (browsers do
   // this automatically for disabled elements). Restore focus once
   // loading finishes so the visitor can keep typing without re-clicking.
+  // Skips the very first render — otherwise this fires on initial page
+  // load (isLoading starts false) and focus()'ing the input causes the
+  // browser to auto-scroll the whole page down to the terminal instead
+  // of staying at the top.
+  const isFirstLoadingEffect = useRef(true);
   useEffect(() => {
+    if (isFirstLoadingEffect.current) {
+      isFirstLoadingEffect.current = false;
+      return;
+    }
     if (!isLoading) {
       inputRef.current?.focus();
     }
@@ -522,7 +554,7 @@ function TypingTestPanel({ mode, setMode, onClose }) {
                         : 'border-white/15 text-white/60 hover:border-white/30 hover:text-white/80'
                     }`}
                   >
-                    {d}s
+                    {formatDuration(d)}
                   </button>
                 ))}
               </div>
@@ -617,7 +649,7 @@ function RunningView({
     <div className="space-y-4" onClick={() => typingInputRef.current?.focus()}>
       {/* Stats bar */}
       <div className="flex flex-wrap gap-4 text-xs">
-        <Stat label="Time" value={`${Math.ceil(timeLeft)}s`} color="#ffbd2e" />
+        <Stat label="Time" value={formatTimeLeft(timeLeft)} color="#ffbd2e" />
         <Stat label="WPM" value={wpm} color="#27c93f" />
         <Stat label="Accuracy" value={`${accuracy}%`} color="#61afef" />
         <Stat label="Errors" value={errorChars} color="#ff5f56" />

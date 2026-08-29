@@ -16,7 +16,7 @@ const CATEGORY_ORDER = ['All', 'Web', 'Mobile', 'Hardware', 'ML'];
  * animates the grid out/in smoothly via Framer Motion's
  * AnimatePresence, instead of an abrupt re-render.
  */
-function Projects() {
+function Projects({ partsRef }) {
   const [activeCategory, setActiveCategory] = useState('All');
 
   // Only show filter buttons for categories that actually exist
@@ -82,6 +82,7 @@ function Projects() {
               transition={{ duration: 0.3, ease: 'easeOut' }}
             >
               <ProjectCard
+                id={project.id}
                 title={project.title}
                 subtitle={project.subtitle}
                 description={project.description}
@@ -89,6 +90,7 @@ function Projects() {
                 githubUrl={project.githubUrl}
                 liveUrl={project.liveUrl}
                 index={index}
+                partsRef={partsRef}
               />
             </motion.div>
           ))}
